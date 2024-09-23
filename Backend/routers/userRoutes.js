@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 const SECRET_KEY = 'secret-key'
 const dotenv = require('dotenv')
 const nodemailer = require('nodemailer')
+const Services = require('../modules/services')
 dotenv.config()
 
 // Create a new user (Signup route)
@@ -52,7 +53,7 @@ router.post('/userlogin',async(req,res) =>{
     res.status(401).json({message:'Incorrect Password'})
   }
   const token = jwt.sign({userId: user._id},SECRET_KEY,{expiresIn:'1hr'})
-  res.json({role:user.role,token})
+  res.json({role:user.role,token,id:user._id})
   }
 
   catch(error){
@@ -156,6 +157,33 @@ router.get('/usercount',async(req,res)=>{
   }
 })
 
+//Creating Services
+router.post('/newservice',async(req,res)=>{
+  try{
+    const {newService,description}=req.body;
+    const servicename = await Services.findOne({servicename:newService})
+    if(servicename){
+      res.status(203).json({message:'Service is already exists'})
+    }
+    const newservice = new Services({servicename:newService,servicedescription:description})
+    await newservice.save()
+    res.status(200).json({message:'Service Added'})
+  }
+  catch(error){
+    res.status(500).json({message:'Internal error'})
+  }
+})
+
+//sending Services
+router.get('/service',async(req,res)=>{
+  try{
+    const service = await Services.find({})
+    res.status(200).json({service})
+  }
+  catch(error){
+    res.status(500).json({'Error fetching services':error})
+  }
+}) 
 // Additional endpoints for updating or deleting users
 // Example: router.put('/api/users/:id', (req, res) => {});
 // Example: router.delete('/api/users/:id', (req, res) => {});

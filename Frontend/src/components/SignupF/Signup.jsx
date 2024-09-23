@@ -12,9 +12,11 @@ export const Signup = () => {
     const [phoneNo, setPhoneNo] = useState('');
     const [address, setAddress] = useState('');
     const [service, setService] = useState('');
-    const [services] = useState(['Electrical','Cleaning','Plumbing','AC','RO','Washing Machine','Installation','Television']);
+    //const [services] = useState(['Electrical','Cleaning','Plumbing','AC','RO','Washing Machine','Installation','Television']);
+    const [services,setServices] = useState([])
     const [pincode,setPincode]=useState('')
     const navigate = useNavigate();
+    
     
     const handleRegister = async (event) => {
         event.preventDefault();
@@ -57,7 +59,16 @@ export const Signup = () => {
         })
         }
     useEffect(()=>{
-        fetchUser();
+        const fetchService = async() => {
+            try{
+                const response = await axios.get('http://localhost:8088/userRoutes/service')
+                setServices(response.data.service)
+            }
+            catch(error){
+                console.log('Error fetching services',error)
+            }
+        }
+        fetchService();
     },[])
 
     const fetchUser =  async() => {
@@ -111,7 +122,7 @@ export const Signup = () => {
                                 <select className="form-control" value={service} onChange={(e) => setService(e.target.value)} required>
                                     <option value="">Select a Service</option>
                                     {services.map((service, index) => (
-                                        <option key={index} value={service}>{service}</option>
+                                        <option key={index} value={service.servicename}>{service.servicename}</option>
                                     ))}
                                 </select><br />
                             </div>

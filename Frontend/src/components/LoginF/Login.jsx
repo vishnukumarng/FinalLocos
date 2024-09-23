@@ -18,6 +18,7 @@ export const Login = () => {
     .post('http://localhost:8088/userRoutes/userlogin',{email,password})
       setEmail()
       setPassword()
+      console.log('user id:',response.data.id)
       alert('Login Successful')
       const role = response.data.role
       if( role === 'Admin'){
